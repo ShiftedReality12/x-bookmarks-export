@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>x-bookmarks-export tests</title>
+<style>
+  body { margin: 16px; font: 13px/1.45 ui-monospace, Menlo, monospace; }
+  pre { white-space: pre-wrap; }
+  #summary { font-weight: bold; }
+</style>
+</head>
+<body>
+<h1>x-bookmarks-export tests</h1>
+<div id="summary">SUMMARY: not run</div>
+<div id="env"></div>
+<pre id="results"></pre>
+<h2>Generated Markdown</h2>
+<div id="markdown-source"></div>
+<pre id="markdown"></pre>
+<h2>Fixture (copied from fixture-bookmarks.html)</h2>
+<div id="stage"></div>
+<iframe id="fixture" src="fixture-bookmarks.html" hidden></iframe>
+<script>
+  // Stand-in for the only chrome.* API content.js uses; no extension is installed for these tests.
+  window.chrome = { runtime: { onMessage: { listeners: [], addListener(fn) { this.listeners.push(fn); } } } };
+</script>
+<script src="../parser.js"></script>
+<script src="../content.js"></script>
+<script src="tests.js"></script>
+</body>
+</html>

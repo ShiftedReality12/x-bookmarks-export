@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>X bookmarks to Markdown</title>
+<style>
+  :root { color-scheme: light dark; --fg: #0f1419; --muted: #536471; --line: #cfd9de; --accent: #1d9bf0; --bad: #c4291c; }
+  @media (prefers-color-scheme: dark) { :root { --fg: #e7e9ea; --muted: #8b98a5; --line: #38444d; --bad: #ff6b5e; } }
+  body { box-sizing: border-box; width: 300px; margin: 0; padding: 14px 16px; font: 13px/1.45 system-ui, sans-serif; color: var(--fg); }
+  h1 { margin: 0 0 10px; font-size: 15px; }
+  label { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: 8px 0; }
+  select, input, button { font: inherit; }
+  input[type=date] { display: block; margin: 0 0 8px auto; }
+  input[type=date][hidden] { display: none; }
+  .row { display: flex; gap: 8px; margin-top: 12px; }
+  .row button { flex: 1; }
+  button { padding: 6px 10px; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--fg); cursor: pointer; }
+  button:disabled { opacity: .45; cursor: default; }
+  #start:not(:disabled) { background: var(--accent); border-color: var(--accent); color: #fff; }
+  #off { margin-bottom: 10px; padding: 10px; border: 1px solid var(--line); border-radius: 10px; }
+  #off p { margin: 0 0 8px; }
+  #off .hint, #count { color: var(--muted); }
+  #count { margin: 10px 0 4px; }
+  #msg { margin: 0; overflow-wrap: anywhere; }
+  #msg.error { color: var(--bad); }
+</style>
+</head>
+<body>
+<h1>X bookmarks to Markdown</h1>
+<section id="off" hidden>
+  <p><strong>Open your X bookmarks page to export</strong></p>
+  <button type="button" id="go">Go to Bookmarks</button>
+  <p class="hint">Just installed? Reload the X tab.</p>
+</section>
+<form id="form">
+  <label>Recency
+    <select id="recency">
+      <option value="24h">Last 24h</option>
+      <option value="7d">Last 7 days</option>
+      <option value="30d">Last 30 days</option>
+      <option value="all" selected>All</option>
+      <option value="since">Since…</option>
+    </select>
+  </label>
+  <input type="date" id="since" aria-label="Since date" hidden>
+  <label>Max posts
+    <select id="max">
+      <option value="50">50</option>
+      <option value="100" selected>100</option>
+      <option value="500">500</option>
+      <option value="all">All</option>
+    </select>
+  </label>
+  <div class="row">
+    <button type="submit" id="start" disabled>Start</button>
+    <button type="button" id="stop" disabled>Stop</button>
+  </div>
+</form>
+<p id="count">seen 0, kept 0</p>
+<p id="msg" role="status"></p>
+<script src="popup.js"></script>
+</body>
+</html>

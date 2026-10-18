@@ -1,0 +1,7 @@
+# Local build instructions and report: never commit
+.xbe-PROMPT.md
+BUILD-REPORT.md
+
+.DS_Store
+*.crx
+*.pem

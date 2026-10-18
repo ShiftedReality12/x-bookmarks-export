@@ -1,0 +1,225 @@
+<!-- FIXTURE: hand-written to mimic X's bookmarks DOM; not captured from a live page. -->
+<!--
+  Structure follows the landmarks in parser.js SELECTORS (data-testid names, <time datetime> inside the
+  permalink, quoted posts as a nested div[role="link"]). Class names are trimmed, and image/video src
+  attributes are left out so loading this file makes no network requests. Cells are in SAVE order, which
+  differs from post-date order on purpose.
+  Cells: 1 plain (mention + hashtag), 2 >280 chars, 3 emoji <img>, 4 text link + link card, 5 two photos,
+  6 video (wrapped in placementTracking on purpose: that alone must not mark an ad), 7 quoted post,
+  8 duplicate of cell 1, 9 promoted/ad, 10 malformed (no time), 11 X article, 12 non-post row.
+-->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>FIXTURE: X bookmarks timeline</title></head>
+<body>
+<p id="fixture-label">FIXTURE: hand-written to mimic X's bookmarks DOM; not captured from a live page</p>
+<main role="main">
+<div aria-label="Timeline: Bookmarks" class="css-175oi2r">
+<div class="css-175oi2r" style="position: relative;">
+
+<!-- 1. plain post: line break, mention and hashtag links (both dropped from Links) -->
+<div data-testid="cellInnerDiv" style="transform: translateY(0px);">
+  <div class="css-175oi2r r-1igl3o0 r-qklmqi"><div class="css-175oi2r">
+    <article aria-labelledby="id__p1" role="article" tabindex="0" data-testid="tweet">
+      <div class="css-175oi2r r-18u37iz">
+        <div class="css-175oi2r r-1iusvr4 r-16y2uox">
+          <div data-testid="User-Name" class="css-175oi2r r-1wbh5a2">
+            <div class="css-175oi2r"><a href="/alice_dev" role="link"><div><span><span>Alice Example</span></span></div></a></div>
+            <div class="css-175oi2r r-18u37iz"><a href="/alice_dev" role="link" tabindex="-1"><div dir="ltr"><span>@alice_dev</span></div></a><div aria-hidden="true"><span>·</span></div><a href="/alice_dev/status/1846000000000000001" dir="ltr" aria-label="Oct 17" role="link"><time datetime="2026-10-17T15:04:00.000Z">Oct 17</time></a></div>
+          </div>
+          <div dir="auto" lang="en" data-testid="tweetText" class="css-146c3p1"><span class="css-1jxf684">Shipping a tiny tool today.
+No build step, no dependencies. Thanks </span><div class="css-175oi2r" style="display: inline-flex;"><span class="r-18u37iz"><a dir="ltr" href="/bob_builds" role="link">@bob_builds</a></span></div><span class="css-1jxf684"> for the review </span><span class="r-18u37iz"><a dir="ltr" href="/hashtag/buildinpublic?src=hashtag_click" role="link">#buildinpublic</a></span></div>
+          <div role="group" aria-label="2 replies, 5 reposts, 40 likes, 1 bookmark"><button data-testid="reply" type="button"></button><button data-testid="removeBookmark" type="button"></button></div>
+        </div>
+      </div>
+    </article>
+  </div></div>
+</div>
+
+<!-- 2. long post (more than 280 characters), X shows "Show more" -->
+<div data-testid="cellInnerDiv" style="transform: translateY(180px);">
+  <div class="css-175oi2r"><div class="css-175oi2r">
+    <article aria-labelledby="id__p2" role="article" tabindex="0" data-testid="tweet">
+      <div class="css-175oi2r r-1iusvr4 r-16y2uox">
+        <div data-testid="User-Name" class="css-175oi2r">
+          <div class="css-175oi2r"><a href="/carol_writes" role="link"><div><span><span>Carol Writer</span></span></div></a></div>
+          <div class="css-175oi2r"><a href="/carol_writes" role="link" tabindex="-1"><div dir="ltr"><span>@carol_writes</span></div></a><div aria-hidden="true"><span>·</span></div><a href="/carol_writes/status/1846000000000000002" role="link"><time datetime="2026-10-12T09:30:00.000Z">Oct 12</time></a></div>
+        </div>
+        <div dir="auto" lang="en" data-testid="tweetText"><span class="css-1jxf684">Thread on why local-first tools matter:
+
+1. Your data stays on your machine, so there is nothing to leak and nothing for a vendor to lose.
+2. They keep working when the vendor pivots, raises prices, or disappears.
+3. They are fast because there is no round trip for every click.
+4. You can read the code in an afternoon and know exactly what it does.</span></div>
+        <button data-testid="tweet-text-show-more-link" type="button">Show more</button>
+      </div>
+    </article>
+  </div></div>
+</div>
+
+<!-- 3. emoji as <img alt>, also in the display name -->
+<div data-testid="cellInnerDiv" style="transform: translateY(400px);">
+  <div class="css-175oi2r"><div class="css-175oi2r">
+    <article aria-labelledby="id__p3" role="article" tabindex="0" data-testid="tweet">
+      <div class="css-175oi2r r-1iusvr4">
+        <div data-testid="User-Name">
+          <div><a href="/dan_emoji" role="link"><div><span><span>Dan </span><img alt="🚀" draggable="false" class="r-4qtqp9"></span></div></a></div>
+          <div><a href="/dan_emoji" role="link" tabindex="-1"><div dir="ltr"><span>@dan_emoji</span></div></a><div aria-hidden="true"><span>·</span></div><a href="/dan_emoji/status/1846000000000000003" role="link"><time datetime="2026-10-16T20:15:00.000Z">Oct 16</time></a></div>
+        </div>
+        <div dir="auto" lang="en" data-testid="tweetText"><span class="css-1jxf684">Launch day </span><img alt="🚀" draggable="false" class="r-4qtqp9"><span class="css-1jxf684"> going well </span><img alt="🎉" draggable="false" class="r-4qtqp9"></div>
+      </div>
+    </article>
+  </div></div>
+</div>
+
+<!-- 4. t.co link in the text (hidden "https://" and tail spans, visible "…") plus a link card -->
+<div data-testid="cellInnerDiv" style="transform: translateY(560px);">
+  <div class="css-175oi2r"><div class="css-175oi2r">
+    <article aria-labelledby="id__p4" role="article" tabindex="0" data-testid="tweet">
+      <div class="css-175oi2r r-1iusvr4">
+        <div data-testid="User-Name">
+          <div><a href="/erin_links" role="link"><div><span><span>Erin Links</span></span></div></a></div>
+          <div><a href="/erin_links" role="link" tabindex="-1"><div dir="ltr"><span>@erin_links</span></div></a><div aria-hidden="true"><span>·</span></div><a href="/erin_links/status/1846000000000000004" role="link"><time datetime="2026-10-15T20:00:00.000Z">Oct 15</time></a></div>
+        </div>
+        <div dir="auto" lang="en" data-testid="tweetText"><span class="css-1jxf684">Notes worth reading: </span><a dir="ltr" href="https://t.co/aaa111" rel="noopener noreferrer nofollow" target="_blank" role="link" class="css-1jxf684"><span aria-hidden="true" class="r-qlhcfr">https://</span>example.org/notes/local-fir<span aria-hidden="true" class="r-qlhcfr">st</span><span aria-hidden="true">…</span></a></div>
+        <div class="css-175oi2r r-9aw3ui">
+          <div data-testid="card.wrapper" class="css-175oi2r r-1adg3ll">
+            <div data-testid="card.layoutLarge.media"><a href="https://t.co/bbb222" rel="noopener noreferrer nofollow" target="_blank" role="link" aria-label="developer.chrome.com Stay secure  |  Chrome Extensions"><div class="css-175oi2r"><div><span>developer.chrome.com</span></div></div></a></div>
+          </div>
+          <div><span>From developer.chrome.com</span></div>
+        </div>
+      </div>
+    </article>
+  </div></div>
+</div>
+
+<!-- 5. two photos (each photo anchor is also a /status/ link, but holds no <time>) -->
+<div data-testid="cellInnerDiv" style="transform: translateY(900px);">
+  <div class="css-175oi2r"><div class="css-175oi2r">
+    <article aria-labelledby="id__p5" role="article" tabindex="0" data-testid="tweet">
+      <div class="css-175oi2r r-1iusvr4">
+        <div data-testid="User-Name">
+          <div><a href="/frank_photos" role="link"><div><span><span>Frank Photos</span></span></div></a></div>
+          <div><a href="/frank_photos" role="link" tabindex="-1"><div dir="ltr"><span>@frank_photos</span></div></a><div aria-hidden="true"><span>·</span></div><a href="/frank_photos/status/1846000000000000005" role="link"><time datetime="2026-10-14T06:00:00.000Z">Oct 14</time></a></div>
+        </div>
+        <div dir="auto" lang="en" data-testid="tweetText"><span class="css-1jxf684">Two shots from this morning's walk</span></div>
+        <div class="css-175oi2r r-9aw3ui"><div class="css-175oi2r r-1adg3ll">
+          <a href="/frank_photos/status/1846000000000000005/photo/1" role="link"><div aria-label="Image" data-testid="tweetPhoto"><img alt="Image" draggable="true"></div></a>
+          <a href="/frank_photos/status/1846000000000000005/photo/2" role="link"><div aria-label="Image" data-testid="tweetPhoto"><img alt="Image" draggable="true"></div></a>
+        </div></div>
+      </div>
+    </article>
+  </div></div>
+</div>
+
+<!-- 6. video: player inside tweetPhoto, wrapped in placementTracking; it has a permalink, so it is not an ad -->
+<div data-testid="cellInnerDiv" style="transform: translateY(1300px);">
+  <div class="css-175oi2r"><div class="css-175oi2r">
+    <article aria-labelledby="id__p6" role="article" tabindex="0" data-testid="tweet">
+      <div class="css-175oi2r r-1iusvr4">
+        <div data-testid="User-Name">
+          <div><a href="/gina_video" role="link"><div><span><span>Gina Video</span></span></div></a></div>
+          <div><a href="/gina_video" role="link" tabindex="-1"><div dir="ltr"><span>@gina_video</span></div></a><div aria-hidden="true"><span>·</span></div><a href="/gina_video/status/1846000000000000006" role="link"><time datetime="2026-10-13T12:00:00.000Z">Oct 13</time></a></div>
+        </div>
+        <div dir="auto" lang="en" data-testid="tweetText"><span class="css-1jxf684">30-second demo of the export flow</span></div>
+        <div class="css-175oi2r r-9aw3ui"><div data-testid="tweetPhoto"><div data-testid="placementTracking"><div data-testid="videoPlayer"><div data-testid="videoComponent"><video aria-label="Embedded video" preload="none" playsinline></video></div></div></div></div></div>
+      </div>
+    </article>
+  </div></div>
+</div>
+
+<!-- 7. quoted post: nested div[role=link] with its own User-Name; its <time> is not a link, its photo link is -->
+<div data-testid="cellInnerDiv" style="transform: translateY(1700px);">
+  <div class="css-175oi2r"><div class="css-175oi2r">
+    <article aria-labelledby="id__p7" role="article" tabindex="0" data-testid="tweet">
+      <div class="css-175oi2r r-1iusvr4">
+        <div data-testid="User-Name">
+          <div><a href="/hana_quotes" role="link"><div><span><span>Hana Quotes</span></span></div></a></div>
+          <div><a href="/hana_quotes" role="link" tabindex="-1"><div dir="ltr"><span>@hana_quotes</span></div></a><div aria-hidden="true"><span>·</span></div><a href="/hana_quotes/status/1846000000000000007" role="link"><time datetime="2026-10-17T07:20:00.000Z">Oct 17</time></a></div>
+        </div>
+        <div dir="auto" lang="en" data-testid="tweetText"><span class="css-1jxf684">This is the right default </span><img alt="👇" draggable="false"></div>
+        <div class="css-175oi2r r-9aw3ui"><div class="css-175oi2r" id="id__q7">
+          <div tabindex="0" class="css-175oi2r r-adacv r-1udh08x" role="link">
+            <div data-testid="User-Name"><div><div><span><span>Ivan Original</span></span></div></div><div><div dir="ltr"><span>@ivan_original</span></div><div aria-hidden="true"><span>·</span></div><div><time datetime="2026-10-10T10:00:00.000Z">Oct 10</time></div></div></div>
+            <div dir="auto" lang="en" data-testid="tweetText"><span class="css-1jxf684">Extensions should ask for zero permissions when they can.</span></div>
+            <a href="/ivan_original/status/1845000000000000999/photo/1" role="link"><div data-testid="tweetPhoto"><img alt="Image"></div></a>
+          </div>
+        </div></div>
+      </div>
+    </article>
+  </div></div>
+</div>
+
+<!-- 8. duplicate of cell 1 (same status id), as when X re-renders a row -->
+<div data-testid="cellInnerDiv" style="transform: translateY(2000px);">
+  <div class="css-175oi2r r-1igl3o0 r-qklmqi"><div class="css-175oi2r">
+    <article aria-labelledby="id__p8" role="article" tabindex="0" data-testid="tweet">
+      <div class="css-175oi2r r-18u37iz">
+        <div class="css-175oi2r r-1iusvr4 r-16y2uox">
+          <div data-testid="User-Name" class="css-175oi2r r-1wbh5a2">
+            <div class="css-175oi2r"><a href="/alice_dev" role="link"><div><span><span>Alice Example</span></span></div></a></div>
+            <div class="css-175oi2r r-18u37iz"><a href="/alice_dev" role="link" tabindex="-1"><div dir="ltr"><span>@alice_dev</span></div></a><div aria-hidden="true"><span>·</span></div><a href="/alice_dev/status/1846000000000000001" dir="ltr" aria-label="Oct 17" role="link"><time datetime="2026-10-17T15:04:00.000Z">Oct 17</time></a></div>
+          </div>
+          <div dir="auto" lang="en" data-testid="tweetText" class="css-146c3p1"><span class="css-1jxf684">Shipping a tiny tool today.
+No build step, no dependencies. Thanks </span><div class="css-175oi2r" style="display: inline-flex;"><span class="r-18u37iz"><a dir="ltr" href="/bob_builds" role="link">@bob_builds</a></span></div><span class="css-1jxf684"> for the review </span><span class="r-18u37iz"><a dir="ltr" href="/hashtag/buildinpublic?src=hashtag_click" role="link">#buildinpublic</a></span></div>
+        </div>
+      </div>
+    </article>
+  </div></div>
+</div>
+
+<!-- 9. promoted post: placementTracking + "Ad" label, no permalink/time -->
+<div data-testid="cellInnerDiv" style="transform: translateY(2180px);">
+  <div class="css-175oi2r"><div data-testid="placementTracking">
+    <article aria-labelledby="id__ad" role="article" tabindex="0" data-testid="tweet">
+      <div class="css-175oi2r r-1iusvr4">
+        <div data-testid="User-Name">
+          <div><a href="/brand_ads" role="link"><div><span><span>Brand Example</span></span></div></a></div>
+          <div><a href="/brand_ads" role="link" tabindex="-1"><div dir="ltr"><span>@brand_ads</span></div></a></div>
+        </div>
+        <div class="css-175oi2r"><span class="css-1jxf684">Ad</span></div>
+        <div dir="auto" lang="en" data-testid="tweetText"><span class="css-1jxf684">Upgrade your workflow today.</span></div>
+      </div>
+    </article>
+  </div></div>
+</div>
+
+<!-- 10. malformed: a post article with no <time>, so it cannot be parsed (must count as a failure) -->
+<div data-testid="cellInnerDiv" style="transform: translateY(2340px);">
+  <div class="css-175oi2r"><div class="css-175oi2r">
+    <article aria-labelledby="id__bad" role="article" tabindex="0" data-testid="tweet">
+      <div class="css-175oi2r r-1iusvr4">
+        <div data-testid="User-Name">
+          <div><a href="/kim_broken" role="link"><div><span><span>Kim Broken</span></span></div></a></div>
+          <div><a href="/kim_broken" role="link" tabindex="-1"><div dir="ltr"><span>@kim_broken</span></div></a></div>
+        </div>
+        <div dir="auto" lang="en" data-testid="tweetText"><span class="css-1jxf684">This post has no time element, so it cannot be parsed.</span></div>
+      </div>
+    </article>
+  </div></div>
+</div>
+
+<!-- 11. X long-form article preview -->
+<div data-testid="cellInnerDiv" style="transform: translateY(2500px);">
+  <div class="css-175oi2r"><div class="css-175oi2r">
+    <article aria-labelledby="id__p11" role="article" tabindex="0" data-testid="tweet">
+      <div class="css-175oi2r r-1iusvr4">
+        <div data-testid="User-Name">
+          <div><a href="/jules_longform" role="link"><div><span><span>Jules Longform</span></span></div></a></div>
+          <div><a href="/jules_longform" role="link" tabindex="-1"><div dir="ltr"><span>@jules_longform</span></div></a><div aria-hidden="true"><span>·</span></div><a href="/jules_longform/status/1846000000000000011" role="link"><time datetime="2026-10-11T16:00:00.000Z">Oct 11</time></a></div>
+        </div>
+        <div dir="auto" lang="en" data-testid="tweetText"><span class="css-1jxf684">New article is up</span></div>
+        <div class="css-175oi2r r-9aw3ui"><a href="/i/article/1844000000000000111" role="link"><div data-testid="article-cover-image"></div><div><span>Why I export my bookmarks every day</span></div><div><span>A short note on keeping my own copy.</span></div></a></div>
+      </div>
+    </article>
+  </div></div>
+</div>
+
+<!-- 12. non-post row (separator), must be ignored -->
+<div data-testid="cellInnerDiv" style="transform: translateY(2700px);"><div class="css-175oi2r"><div role="separator" class="css-175oi2r r-1adg3ll"></div></div></div>
+
+</div>
+</div>
+</main>
+</body>
+</html>
