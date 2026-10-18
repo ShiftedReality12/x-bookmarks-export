@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "X Bookmarks to Markdown",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Export the X bookmarks shown on x.com/i/bookmarks to a Markdown file. Reads the page only: no network, no storage.",
   "action": {
     "default_popup": "popup.html",

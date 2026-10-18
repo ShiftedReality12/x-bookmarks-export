@@ -72,10 +72,17 @@
     check('statusUrl strips query, maps twitter.com to x.com', XBE.statusUrl('https://twitter.com/a_b/status/123?s=20&t=x'), 'https://x.com/a_b/status/123');
     check('statusUrl rejects other hosts', XBE.statusUrl('https://example.com/a_b/status/123'), '');
 
-    const yes = ['/i/bookmarks', '/i/bookmarks/', '/i/bookmarks/1790000000000000000', '/i/bookmarks/1790000000000000000/'];
-    const no = ['/home', '/i/bookmarksx', '/i/bookmarks/a/b', '/alice_dev/status/1', '/i/lists/123', ''];
-    check('isBookmarksPath accepts list + folder paths', yes.map(XBE.isBookmarksPath), yes.map(() => true));
-    check('isBookmarksPath rejects other paths', no.map(XBE.isBookmarksPath), no.map(() => false));
+    const page = ([path, tab]) => XBE.isBookmarksPage(path, tab);
+    const yes = [['/i/bookmarks', ''], ['/i/bookmarks/', ''], ['/i/bookmarks/1790000000000000000', ''], ['/i/bookmarks/1790000000000000000/', ''],
+      ['/i/history', 'Bookmarks'], ['/i/history/', 'Bookmarks']];
+    const no = [['/home', 'Bookmarks'], ['/i/bookmarksx', ''], ['/i/bookmarks/a/b', ''], ['/alice_dev/status/1', ''], ['/i/lists/123', ''], ['', ''],
+      ['/i/history', 'Likes'], ['/i/history', ''], ['/i/historyx', 'Bookmarks'], ['/i/history/likes', 'Bookmarks']];
+    check('isBookmarksPage accepts list, folder, and History with Bookmarks tab', yes.map(page), yes.map(() => true));
+    check('isBookmarksPage rejects other pages and the History Likes tab', no.map(page), no.map(() => false));
+    check('isHistoryPath', ['/i/history', '/i/history/', '/i/bookmarks', '/i/history/x'].map(XBE.isHistoryPath), [true, true, false, false]);
+    const likes = document.createElement('div');
+    likes.innerHTML = '<a role="tab" aria-selected="false"><span>Bookmarks</span></a><a role="tab" aria-selected="true"><span>Likes</span></a>';
+    check('selectedTab reads the selected History tab', [XBE.selectedTab($('stage')), XBE.selectedTab(likes), XBE.selectedTab(document.createElement('div'))], ['Bookmarks', 'Likes', '']);
 
     const h = (s, k) => XBE.checkHealth(s, k).ok;
     check('checkHealth: 0 seen is ok (empty bookmarks)', h(0, 0), true);
@@ -139,10 +146,19 @@
 
   function testGating() {
     check('content.js registered one message listener', chrome.runtime.onMessage.listeners.length, 1);
-    check('status off the bookmarks page (this file:// page)', send({ type: 'status' }), { onBookmarks: false, state: 'idle', seen: 0, kept: 0, message: '' });
+    check('status off the bookmarks page (this file:// page)', send({ type: 'status' }), { onBookmarks: false, hint: '', state: 'idle', seen: 0, kept: 0, message: '' });
     const refused = send({ type: 'start', options: { recency: 'all', max: 'all' } });
     check('start refused off the bookmarks page', [refused.error, refused.state], ['Open your X bookmarks page to export', 'idle']);
     check('no overlay after a refused start', !!$('xbe-overlay'), false);
+
+    const real = { isHistoryPath: XBE.isHistoryPath, isBookmarksPage: XBE.isBookmarksPage };
+    Object.assign(XBE, { isHistoryPath: () => true, isBookmarksPage: () => false }); // pretend: /i/history, Likes tab
+    const onLikes = send({ type: 'start', options: { recency: 'all', max: 'all' } });
+    check('History page, Likes tab: start refused with a Bookmarks-tab hint', [onLikes.error, onLikes.onBookmarks, onLikes.hint, onLikes.state],
+      ['Open your X bookmarks page to export', false, 'Select the Bookmarks tab on this page (not Likes).', 'idle']);
+    XBE.isBookmarksPage = () => true; // ...and the Bookmarks tab
+    check('History page, Bookmarks tab: ready, no hint', [send({ type: 'status' }).onBookmarks, send({ type: 'status' }).hint], [true, '']);
+    Object.assign(XBE, real);
   }
 
   async function testRunLoop(fixtureNodes) {
@@ -158,8 +174,8 @@
       if (files.length) files[files.length - 1].name = a.download;
     }, true);
     const restoreStage = () => $('stage').replaceChildren(...fixtureNodes.map(n => n.cloneNode(true)));
-    const realPath = XBE.isBookmarksPath;
-    XBE.isBookmarksPath = () => true; // pretend this file:// page is x.com/i/bookmarks
+    const realPage = XBE.isBookmarksPage;
+    XBE.isBookmarksPage = () => true; // pretend this file:// page is x.com/i/bookmarks
 
     async function exportRun(options, during) {
       const before = files.length;
@@ -186,7 +202,11 @@
     check('run: overlay shows the result, then is removed', [$('xbe-overlay') && $('xbe-overlay').firstChild.textContent, await sleep(6500).then(() => !$('xbe-overlay'))], [all.st.message, true]);
     if (all.text) showMarkdown('Source: the file content.js saved in the end-to-end run on the fixture (recency All, max All). "Page" is this test file because tests run from file://.', all.text);
 
+    const realHistory = XBE.isHistoryPath;
+    XBE.isHistoryPath = () => true; // this run pretends to be on /i/history (Bookmarks tab selected in the fixture)
     const max3 = await exportRun({ recency: 'all', max: '3' });
+    XBE.isHistoryPath = realHistory;
+    check('run: header names the History tab that was exported', (max3.lines.find(l => l.startsWith('- Page: ')) || '').endsWith(' (Bookmarks tab)'), true);
     check('run: max reached stops and keeps the first 3 saves', [max3.lines.includes('- Stop reason: max reached (3)'), max3.lines.includes('- Filter: recency = All; max = 3'), headings(max3.text)],
       [true, true, [heading(1, 1), heading(2, 3), heading(3, 2)]]);
 
@@ -200,8 +220,8 @@
     const overlayStop = await exportRun({ recency: 'all', max: 'all' }, () => $('xbe-overlay').lastChild.click());
     check('run: overlay Stop button stops the run', overlayStop.lines.includes('- Stop reason: stopped by user (partial export of what was collected)'), true);
 
-    const left = await exportRun({ recency: 'all', max: 'all' }, () => { XBE.isBookmarksPath = () => false; });
-    XBE.isBookmarksPath = () => true;
+    const left = await exportRun({ recency: 'all', max: 'all' }, () => { XBE.isBookmarksPage = () => false; });
+    XBE.isBookmarksPage = () => true;
     check('run: leaving the bookmarks page stops the run', left.lines.includes('- Stop reason: left the bookmarks page (partial export of what was collected)'), true);
 
     for (const t of [...$('stage').querySelectorAll('time')]) t.replaceWith(Object.assign(document.createElement('span'), { textContent: t.textContent }));
@@ -216,7 +236,7 @@
     check('run: empty bookmarks writes a file saying 0 bookmarks', [empty.st.state, empty.lines.includes('- Posts seen while scrolling: 0; exported: 0'), empty.lines.includes('0 bookmarks.')], ['done', true, true]);
 
     restoreStage();
-    XBE.isBookmarksPath = realPath;
+    XBE.isBookmarksPage = realPage;
   }
 
   addEventListener('load', () => {
