@@ -10,7 +10,8 @@ no storage, no credentials, no build step, no dependencies.
 
 ## What it does
 
-On `https://x.com/i/bookmarks` it scrolls the page, reads each post X renders (`<article>` elements),
+On your bookmarks page (`https://x.com/i/bookmarks`, or on newer X the **Bookmarks** tab of
+`https://x.com/i/history`) it scrolls the page, reads each post X renders (`<article>` elements),
 and saves `bookmarks-YYYY-MM-DD.md` (local date) through a normal page download. Each entry has the
 author, post date, canonical URL (`https://x.com/<handle>/status/<id>`), the text as a blockquote,
 links (with the expanded URL or card title), media counts, the quoted post and the X article title
@@ -25,8 +26,10 @@ when present. Entries are deduplicated by status ID and sorted newest first by p
 
 ## Usage
 
-1. Open `https://x.com/i/bookmarks`. On any other page the popup is disabled and shows
-   **Go to Bookmarks**, which opens that page in the current tab.
+1. Open your bookmarks: `https://x.com/i/bookmarks`, or on newer X the **Bookmarks** tab of
+   `https://x.com/i/history` (that page also has a **Likes** tab, which is refused so likes are never
+   exported as bookmarks). On any other page the popup is disabled and shows **Go to Bookmarks**,
+   which opens `x.com/i/bookmarks` in the current tab.
 2. Click the extension icon, pick **Recency** (Last 24h, 7 days, 30 days, All, or Since a date) and
    **Max posts** (50, 100, 500, All), then click **Start**.
 3. Watch the counter (`seen N, kept M`) in the popup or in the small box at the bottom right of the
@@ -45,7 +48,7 @@ folder. The file's `Page:` line says which list was exported. Folders have not b
 | Manifest entry | Why |
 | --- | --- |
 | `"permissions"` | None. |
-| `content_scripts.matches: ["https://x.com/*"]` | Needed to read the bookmarks page. It matches all of x.com because X is a single-page app: when you click Bookmarks from Home, the page does not reload, so a script matched only to `/i/bookmarks` would not be there. The script is idle until the popup asks, and refuses to start unless `location.pathname` is `/i/bookmarks` (or a folder). Chrome shows this as "Read and change your data on x.com". |
+| `content_scripts.matches: ["https://x.com/*"]` | Needed to read the bookmarks page. It matches all of x.com because X is a single-page app: when you click Bookmarks from Home, the page does not reload, so a script matched only to `/i/bookmarks` would not be there. The script is idle until the popup asks, and refuses to start unless `location.pathname` is `/i/bookmarks` (or a folder), or `/i/history` with its Bookmarks tab selected (`[role="tab"][aria-selected="true"]` reads "Bookmarks"). Switching tab or page mid-run stops the run. Chrome shows this as "Read and change your data on x.com". |
 | `content_scripts.js: ["parser.js", "content.js"]`, `run_at: "document_idle"` | `parser.js` holds the pure parsing code; `content.js` runs the scroll loop, the in-page counter and the save. |
 | `action.default_popup: "popup.html"` | The popup with the filters, Start/Stop and the counter. |
 | `content_security_policy.extension_pages` | `default-src 'none'; script-src 'self'; ...`: the popup can run only its own bundled script, cannot load remote code, and cannot connect anywhere. `style-src 'unsafe-inline'` allows only the popup's inline `<style>` block. |

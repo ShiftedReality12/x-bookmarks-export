@@ -15,6 +15,8 @@ function render(s) {
   const running = !!s && s.state === 'running';
   const ready = !!s && s.onBookmarks;
   $('off').hidden = ready || running;
+  $('hint').textContent = (s && s.hint) || '';
+  $('hint').hidden = !(s && s.hint);
   $('start').disabled = !ready || running;
   $('stop').disabled = !running;
   for (const id of ['recency', 'since', 'max']) $(id).disabled = running;

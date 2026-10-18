@@ -14,6 +14,11 @@
 <body>
 <p id="fixture-label">FIXTURE: hand-written to mimic X's bookmarks DOM; not captured from a live page</p>
 <main role="main">
+<!-- Tab bar of X's /i/history page (Bookmarks | Likes). Assumed structure: role="tab" + aria-selected. -->
+<nav aria-label="History" role="navigation"><div role="tablist">
+  <div role="presentation"><a href="/i/history" role="tab" aria-selected="true"><div><span>Bookmarks</span></div></a></div>
+  <div role="presentation"><a href="/i/history" role="tab" aria-selected="false"><div><span>Likes</span></div></a></div>
+</div></nav>
 <div aria-label="Timeline: Bookmarks" class="css-175oi2r">
 <div class="css-175oi2r" style="position: relative;">
 

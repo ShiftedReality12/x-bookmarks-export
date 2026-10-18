@@ -16,6 +16,7 @@
     quote: 'div[role="link"]',                    // quoted post: a nested role=link holding its own User-Name
     articleLink: 'a[href*="/i/article/"]',        // X long-form article preview
     ad: '[data-testid="placementTracking"]',      // an article with no permalink and this (or an "Ad" label) is an ad
+    selectedTab: '[role="tab"][aria-selected="true"]', // on /i/history this must be the Bookmarks tab (not Likes)
   };
   const AD_LABEL = /^(Ad|Promoted)$/;
   const X_HOST = /^(?:www\.|mobile\.)?(?:x|twitter)\.com$/i;
@@ -139,8 +140,12 @@
   }
   const recencyLabel = (recency, since) => (recency === 'since' ? `Since ${since}` : (RECENCY[recency] || RECENCY.all)[0]);
 
-  // "/i/bookmarks" is all bookmarks; "/i/bookmarks/<folderId>" is a bookmark folder with the same timeline.
-  const isBookmarksPath = path => /^\/i\/bookmarks(?:\/[\w-]+)?\/?$/.test(path || '');
+  // Bookmarks are at /i/bookmarks (a folder at /i/bookmarks/<folderId>) or, on newer X, on the Bookmarks tab
+  // of /i/history, whose Likes tab shows the same kind of timeline and must not be exported as bookmarks.
+  const isHistoryPath = path => /^\/i\/history\/?$/.test(path || '');
+  const isBookmarksPage = (path, tab) => /^\/i\/bookmarks(?:\/[\w-]+)?\/?$/.test(path || '') ||
+    (isHistoryPath(path) && /^Bookmarks\b/i.test(tab || ''));
+  const selectedTab = root => clean((root.querySelector(SELECTORS.selectedTab) || {}).textContent);
 
   const localDate = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
   const localDateTime = d => `${localDate(d)} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
@@ -189,6 +194,6 @@
 
   globalThis.XBE = {
     SELECTORS, OLD_STREAK, parseArticle, parseDocument, toMarkdown, checkHealth, cutoffFor, recencyLabel,
-    isBookmarksPath, statusUrl, fileName, localIso, localDateTime,
+    isBookmarksPage, isHistoryPath, selectedTab, statusUrl, fileName, localIso, localDateTime,
   };
 })();

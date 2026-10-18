@@ -1,4 +1,4 @@
-// content.js: injected on every x.com page (X is a single-page app, so the path is checked on each request).
+// content.js: injected on every x.com page (X is a single-page app, so the page is checked on each request).
 // Exports only what X has already rendered on the bookmarks page; it makes no requests of its own.
 (() => {
   const STEP = 0.8;                      // scroll this share of the viewport per step
@@ -10,8 +10,9 @@
   let run = { state: 'idle', seen: 0, kept: 0, message: '' };
   let overlay = null;
 
-  const onBookmarks = () => XBE.isBookmarksPath(location.pathname);
-  const status = () => ({ onBookmarks: onBookmarks(), state: run.state, seen: run.seen, kept: run.kept, message: run.message });
+  const onBookmarks = () => XBE.isBookmarksPage(location.pathname, XBE.selectedTab(document));
+  const hint = () => (XBE.isHistoryPath(location.pathname) && !onBookmarks() ? 'Select the Bookmarks tab on this page (not Likes).' : '');
+  const status = () => ({ onBookmarks: onBookmarks(), hint: hint(), state: run.state, seen: run.seen, kept: run.kept, message: run.message });
 
   chrome.runtime.onMessage.addListener((msg, _sender, reply) => {
     if (msg.type === 'start') {
@@ -89,7 +90,8 @@
     const now = new Date();
     const name = XBE.fileName(now);
     save(name, XBE.toMarkdown(res.kept, {
-      exportedAt: now, page: location.pathname, cutoff, seen: res.seen, stopReason: res.reason,
+      exportedAt: now, cutoff, seen: res.seen, stopReason: res.reason,
+      page: XBE.isHistoryPath(location.pathname) ? `${location.pathname} (${XBE.selectedTab(document)} tab)` : location.pathname,
       recency: XBE.recencyLabel(opts.recency, opts.since), max: max === Infinity ? 'All' : String(max),
     }));
     end(r, 'done', `Saved ${name}: exported ${res.kept.length} of ${res.seen} posts seen (${res.reason}).`);
