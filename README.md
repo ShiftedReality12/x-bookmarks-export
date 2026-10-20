@@ -1,6 +1,6 @@
 # x-bookmarks-export
 
-A tiny, private Chrome extension (Manifest V3) that saves your X (Twitter) bookmarks to a Markdown
+A tiny, privacy-first Chrome extension (Manifest V3) that saves your X (Twitter) bookmarks to a Markdown
 file. It reads the bookmarks page that X already shows you and nothing else: no network requests,
 no storage, no credentials, no build step, no dependencies.
 
@@ -10,6 +10,8 @@ no storage, no credentials, no build step, no dependencies.
 
 ## What it does
 
+<!-- TODO: add a screenshot of the popup, e.g. docs/popup.png -->
+
 On your bookmarks page (`https://x.com/i/bookmarks`, or on newer X the **Bookmarks** tab of
 `https://x.com/i/history`) it scrolls the page, reads each post X renders (`<article>` elements),
 and saves `bookmarks-YYYY-MM-DD.md` (local date) through a normal page download. Each entry has the
@@ -17,9 +19,18 @@ author, post date, canonical URL (`https://x.com/<handle>/status/<id>`), the tex
 links (with the expanded URL or card title), media counts, the quoted post and the X article title
 when present. Entries are deduplicated by status ID and sorted newest first by post date.
 
+## Requirements
+
+- Google Chrome, or another Chromium-based browser that supports Manifest V3 extensions and
+  **Load unpacked** (for example Edge or Brave). Firefox and Safari are not supported.
+- An X account that is logged in on `x.com` in that browser.
+- Nothing else: no Node, no build step, no dependencies.
+
 ## Install (Load unpacked)
 
-1. Download or clone this repository.
+1. Download or clone this repository:
+   `git clone https://github.com/ShiftedReality12/x-bookmarks-export.git`
+   (or **Code → Download ZIP** on GitHub and unzip it).
 2. Open `chrome://extensions` and turn on **Developer mode** (top right).
 3. Click **Load unpacked** and select the repository folder. Then reload any x.com tab that was
    already open, because Chrome injects the content script only into pages loaded after install.
@@ -120,7 +131,8 @@ the Markdown output, `checkHealth`, the page gating, and the real `content.js` s
 counter, max, recency, Stop from the popup and the page box, leaving the page, layout-change abort
 with no file, empty bookmarks).
 
-Run everything in headless Chrome (macOS path shown; use your Chrome binary elsewhere):
+Run everything in headless Chrome (macOS path shown; on Linux use `google-chrome`, adding
+`--no-sandbox` if you run as root):
 
 ```sh
 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --disable-gpu \
